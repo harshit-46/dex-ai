@@ -1,10 +1,11 @@
-// server/index.js
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import axios from 'axios';
+// server/index.js (CommonJS)
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const axios = require('axios');
 
 dotenv.config();
+console.log("Loaded API Key:", process.env.OPENAI_API_KEY);
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -42,5 +43,5 @@ app.post('/api/generate', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`✅ Server running on http://localhost:${PORT}`);
 });
