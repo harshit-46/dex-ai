@@ -1,12 +1,54 @@
-# React + Vite
+# ⚡ dex.ai — Your AI-Powered Code Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+dex.ai is a modern, web-based AI code editor powered by OpenAI and Monaco Editor. It lets you write natural language prompts and instantly generate functional code snippets, making it an ideal tool for rapid prototyping, learning, or building faster.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
+- ✍️ Prompt-based code generation (using OpenAI GPT models)
+- 🧠 Monaco Editor with syntax highlighting and theme support
+- ⚙️ Clean, responsive React UI
+- 🔒 Environment-based API key security
+- 🧪 Expandable architecture for inline AI suggestions & chat assistants
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repo
+```bash
+git clone https://github.com/yourusername/dex.ai.git
+cd dex.ai
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Add API Key
+Create a `.env` file in the root:
+```env
+VITE_OPENAI_API_KEY=your_openai_api_key_here
+```
+
+### 4. Run the Project
+```bash
+npm run dev
+```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 🔮 Coming Soon
+- 💬 Chat assistant panel (Phase 2)
+- 💡 Inline Copilot-style suggestions (Phase 3)
+- 🌐 Live demo hosted on Vercel
+
+---
+
+## 📄 License
+MIT — Feel free to fork, improve, and use for learning or portfolio!
+
+---
+
+Made with 💻 by Harshit Gupta | Powered by OpenAI
