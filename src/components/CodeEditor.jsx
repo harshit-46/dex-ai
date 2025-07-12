@@ -67,7 +67,7 @@ const CodeEditor = () => {
                         theme="vs-dark"
                         value={code}
                         options={{
-                            readOnly: true,
+                            readOnly: false,
                             fontSize: 14,
                             minimap: { enabled: false },
                             wordWrap: 'on',
