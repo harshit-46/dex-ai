@@ -1,4 +1,3 @@
-// src/App.jsx
 import CodeEditor from './components/CodeEditor'
 import './App.css'
 

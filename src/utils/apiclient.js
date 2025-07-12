@@ -1,73 +1,80 @@
-// src/utils/apiClient.js
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api-inference.huggingface.co/models';
-const API_KEY = import.meta.env.VITE_HUGGINGFACE_API_KEY;
+const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta';
+const HUGGINGFACE_API_KEY = import.meta.env.VITE_HUGGINGFACE_API_KEY;
 
-// Available models (these actually work with the API)
-export const MODELS = {
-    GPT2: 'gpt2',
-    DISTILGPT2: 'distilgpt2',
-    CODEGEN: 'microsoft/DialoGPT-medium'
-};
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const generateCode = async (prompt, model = MODELS.GPT2) => {
-    if (!API_KEY) {
-        throw new Error('API key not found. Please set VITE_HUGGINGFACE_API_KEY in your .env file');
-    }
+export const generateCode = async (prompt, options = {}) => {
+    const {
+        maxTokens = 500,
+        temperature = 0.3,
+        maxRetries = 3,
+        language = 'javascript',
+    } = options;
 
-    try {
-        const response = await axios.post(
-            `${API_BASE_URL}/${model}`,
-            {
-                inputs: `Generate JavaScript code: ${prompt}\n\nCode:\n`,
-                parameters: {
-                    max_new_tokens: 200,
-                    temperature: 0.7,
-                    do_sample: true,
-                    top_p: 0.9,
-                    stop: ['\n\n\n', '```']
+    const formattedPrompt = `You are a coding assistant. Generate ${language} code for the following task:\n\n${prompt}\n\nCode:\n`;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const response = await axios.post(
+                HUGGINGFACE_API_URL,
+                {
+                    inputs: formattedPrompt,
+                    parameters: {
+                        max_new_tokens: maxTokens,
+                        temperature,
+                        top_p: 0.9,
+                        do_sample: true,
+                        stop: ["</code>", "```", "\n\n\n"]
+                    },
+                    options: {
+                        wait_for_model: true
+                    }
                 },
-                options: {
-                    wait_for_model: true
+                {
+                    headers: {
+                        Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 30000
                 }
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                timeout: 30000
+            );
+
+            const data = response.data;
+            let output;
+
+            if (Array.isArray(data)) {
+                output = data[0]?.generated_text;
+            } else {
+                output = data?.generated_text;
             }
-        );
 
-        // Extract generated text
-        const result = Array.isArray(response.data)
-            ? response.data[0]?.generated_text
-            : response.data?.generated_text;
+            const cleanOutput = output?.replace(formattedPrompt, '').trim();
+            return cleanOutput || '// No code generated.';
 
-        if (!result) {
-            throw new Error('No response from API');
-        }
+        } catch (err) {
+            console.error(`HuggingFace API error (attempt ${attempt}/${maxRetries}):`, err.response?.data || err.message);
 
-        // Clean up the response
-        const cleanCode = result
-            .replace(`Generate JavaScript code: ${prompt}\n\nCode:\n`, '')
-            .trim();
+            if (err.response?.status === 503 && attempt < maxRetries) {
+                console.log(`Model loading, retrying in ${attempt * 2}s...`);
+                await delay(attempt * 2000);
+                continue;
+            }
 
-        return cleanCode || '// No code generated';
+            if (err.response?.status === 401) {
+                return '// Invalid API key. Please check your HuggingFace key.';
+            }
 
-    } catch (error) {
-        console.error('API Error:', error);
+            if (err.response?.status === 429) {
+                return '// Rate limit exceeded. Try again shortly.';
+            }
 
-        if (error.response?.status === 401) {
-            throw new Error('Invalid API key');
-        } else if (error.response?.status === 503) {
-            throw new Error('Model is loading. Please try again in a moment.');
-        } else if (error.response?.status === 429) {
-            throw new Error('Rate limit exceeded. Please try again later.');
-        } else {
-            throw new Error(error.message || 'Failed to generate code');
+            if (attempt === maxRetries) {
+                return `// Error generating code: ${err.message}`;
+            }
+
+            await delay(1000 * attempt);
         }
     }
 };
