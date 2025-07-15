@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword , sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -13,12 +13,18 @@ const SignUp = () => {
         e.preventDefault();
         setError('');
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/dashboard');
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+    
+            await sendEmailVerification(user);
+            alert('Signup successful! Please check your email to verify your account.');
+
+            navigate('/verify');
         } catch (err) {
             setError(err.message);
         }
     };
+    
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0d0f1b] text-white">

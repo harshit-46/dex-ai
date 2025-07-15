@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { sendEmailVerification } from 'firebase/auth';
+import { auth } from '../utils/firebase';
 
 const Auth = () => {
     const [isSignup, setIsSignup] = useState(false);
@@ -17,11 +19,25 @@ const Auth = () => {
 
         try {
             if (isSignup) {
-                await signup(email, password);
+                const userCredential = await signup(email, password);
+                const user = userCredential.user;
+
+                // 🔐 Send email verification
+                await sendEmailVerification(user);
+
+                // 🚀 Navigate to verify page
+                navigate('/verify');
             } else {
                 await login(email, password);
+
+                // ✅ Navigate only if email is verified
+                if (!auth.currentUser.emailVerified) {
+                    setError('Please verify your email before logging in.');
+                    return;
+                }
+
+                navigate('/dashboard');
             }
-            navigate('/');
         } catch (err) {
             setError(err.message);
         }
