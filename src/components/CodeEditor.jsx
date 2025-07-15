@@ -1,4 +1,3 @@
-// src/components/CodeEditor.jsx
 import React, { useState } from 'react';
 import { generateCodeStream } from '../utils/mistral';
 import Editor from '@monaco-editor/react';

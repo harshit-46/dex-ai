@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import {
     onAuthStateChanged,
     signOut,
@@ -29,8 +30,6 @@ export const AuthProvider = ({ children }) => {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-
-            // 🔥 Save to Firestore if new user
             const userRef = doc(db, 'users', user.uid);
             const userSnap = await getDoc(userRef);
 
@@ -43,8 +42,13 @@ export const AuthProvider = ({ children }) => {
                     createdAt: new Date().toISOString()
                 });
             }
+            toast.success(`Welcome ${user.displayName || 'User'}!`);
+
+            return user;
         } catch (error) {
             console.error('Google Sign-In Error:', error.message);
+            toast.error('Google sign-in failed.');
+            throw error;
         }
     };
 

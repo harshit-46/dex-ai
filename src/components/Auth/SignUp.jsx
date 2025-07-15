@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword , sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ const SignUp = () => {
             const user = userCredential.user;
     
             await sendEmailVerification(user);
-            alert('Signup successful! Please check your email to verify your account.');
+            toast.success("Signup successful! Please check your email to verify your account.")
 
             navigate('/verify');
         } catch (err) {

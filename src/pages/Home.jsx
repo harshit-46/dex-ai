@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import CodeEditor from '../components/CodeEditor';
+import toast from 'react-hot-toast';
 
 const Home = () => {
     const { user, logout } = useAuth();
@@ -8,10 +9,13 @@ const Home = () => {
     const handleLogout = async () => {
         try {
             await logout();
+            toast.success('Logged out successfully');
         } catch (err) {
+            toast.error('Logout failed');
             console.error('Logout error:', err);
         }
     };
+
 
     return (
         <div className="w-screen h-screen flex flex-col">

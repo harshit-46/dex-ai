@@ -24,8 +24,11 @@ const LoginPage = () => {
 
     const handleGoogleLogin = async () => {
         try {
-            await loginWithGoogle();
-            navigate('/dashboard');
+            const user = await loginWithGoogle();
+            if(user){
+                toast.success(`Welcome ${user.displayName || 'User'}!`);
+                navigate('/dashboard');
+            }
         } catch (err) {
             setError(err.message);
         }
