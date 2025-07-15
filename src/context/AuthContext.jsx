@@ -5,7 +5,8 @@ import {
     signInWithPopup,
     GoogleAuthProvider
 } from 'firebase/auth';
-import { auth } from '../utils/firebase';
+import { auth, db } from '../utils/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
@@ -26,7 +27,22 @@ export const AuthProvider = ({ children }) => {
     const loginWithGoogle = async () => {
         try {
             const provider = new GoogleAuthProvider();
-            await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // 🔥 Save to Firestore if new user
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                await setDoc(userRef, {
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    createdAt: new Date().toISOString()
+                });
+            }
         } catch (error) {
             console.error('Google Sign-In Error:', error.message);
         }
