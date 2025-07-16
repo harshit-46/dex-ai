@@ -26,7 +26,6 @@ const LoginPage = () => {
         try {
             const user = await loginWithGoogle();
             if(user){
-                toast.success(`Welcome ${user.displayName || 'User'}!`);
                 navigate('/dashboard');
             }
         } catch (err) {

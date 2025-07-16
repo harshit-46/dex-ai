@@ -30,9 +30,9 @@ export const AuthProvider = ({ children }) => {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
+
             const userRef = doc(db, 'users', user.uid);
             const userSnap = await getDoc(userRef);
-
             if (!userSnap.exists()) {
                 await setDoc(userRef, {
                     uid: user.uid,
@@ -42,15 +42,20 @@ export const AuthProvider = ({ children }) => {
                     createdAt: new Date().toISOString()
                 });
             }
-            toast.success(`Welcome ${user.displayName || 'User'}!`);
 
+            toast.success(`Welcome, ${user.displayName}!`);
             return user;
         } catch (error) {
-            console.error('Google Sign-In Error:', error.message);
-            toast.error('Google sign-in failed.');
+            if (error.code === 'auth/popup-closed-by-user') {
+                console.warn('User closed the sign-in popup.');
+            } else {
+                toast.error('Google sign-in failed.');
+                console.error('Google Sign-In Error:', error.message);
+            }
             throw error;
         }
     };
+
 
     return (
         <AuthContext.Provider value={{ user, loading, logout, loginWithGoogle }}>
