@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import CodeEditor from '../components/CodeEditor';
-import HistoryPanel from '../components/HistoryPanel';
+//import HistoryPanel from '../components/HistoryPanel';
+import Navbar from '../components/Navbar';
 import toast from 'react-hot-toast';
 
 const Home = () => {
@@ -50,7 +51,8 @@ const Home = () => {
 
             {/* Layout */}
             <div className="flex-1 flex overflow-hidden">
-                <HistoryPanel onSelect={setSelectedItem} />
+                {/*<HistoryPanel onSelect={setSelectedItem} />*/}
+                <Navbar/>
                 <div className="flex-1 overflow-auto">
                     <CodeEditor selectedItem={selectedItem} />
                 </div>
