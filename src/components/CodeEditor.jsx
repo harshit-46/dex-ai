@@ -74,13 +74,6 @@ const CodeEditor = () => {
 
     return (
         <div className="w-screen h-screen bg-gradient-to-br from-[#05070d] via-[#0d0f1b] to-[#0c0e14] text-white flex flex-col">
-            <header className="px-10 py-6 flex items-center justify-between border-b border-gray-800 shadow-sm">
-                <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-2">
-                    <Sparkles className="text-purple-400" size={28} /> dex.ai
-                </h1>
-                <span className="text-sm text-gray-400">AI-Powered Code Generator</span>
-            </header>
-
             <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
                 <aside className="w-full md:w-1/3 lg:w-1/4 px-6 py-8 bg-[#0f111a] border-r border-gray-800 flex flex-col gap-6">
                     <h2 className="text-xl font-semibold">Prompt</h2>

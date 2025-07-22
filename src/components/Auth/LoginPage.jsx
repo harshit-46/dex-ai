@@ -65,7 +65,7 @@ const LoginPage = () => {
                     onClick={handleGoogleLogin}
                     className="w-full py-2 bg-red-500 hover:bg-red-600 rounded transition mb-3"
                 >
-                    🔐 Sign in with Google
+                    Sign in with Google
                 </button>
 
                 <p className="mt-4 text-sm text-gray-400">
