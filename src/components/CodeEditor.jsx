@@ -8,10 +8,8 @@ import toast from 'react-hot-toast';
 
 const templates = [
     "Write a function to check if a number is prime",
-    "Fix this bug in the code: ...",
-    "Convert this JavaScript code to Python: ...",
-    "Explain this code: ...",
-    "Document this function: ..."
+    "Fix this bug in the code",
+    "Convert this JavaScript code to Python"
 ];
 
 const detectLanguage = (text) => {
@@ -70,8 +68,6 @@ const CodeEditor = ({ selectedItem }) => {
                     createdAt: serverTimestamp()
                 });
             }
-
-            toast.success("✅ Code generated successfully!");
             setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
         } catch (err) {
             console.error("❌ Code generation error:", err);
