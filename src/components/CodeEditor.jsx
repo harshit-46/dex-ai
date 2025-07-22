@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { generateCodeStream } from '../utils/mistral';
 import Editor from '@monaco-editor/react';
-import { Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../utils/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 const templates = [
     "Write a function to check if a number is prime",
@@ -24,6 +27,7 @@ const CodeEditor = () => {
     const [error, setError] = useState('');
     const [language, setLanguage] = useState('javascript');
     const [selectedTemplate, setSelectedTemplate] = useState('');
+    const { user } = useAuth();
 
     const handleGenerate = async () => {
         if (!prompt.trim()) return;
@@ -36,30 +40,38 @@ const CodeEditor = () => {
         try {
             const stream = await generateCodeStream(prompt);
             let result = '';
-
             for await (const chunk of stream) {
                 result += chunk;
-
                 const codeMatch = result.match(/```(?:\w+)?\n([\s\S]*?)```/);
                 const explanation = result.replace(/```[\s\S]*?```/, '').trim();
-
                 if (codeMatch) {
                     setCode(codeMatch[1].trim());
                     setLanguage(detectLanguage(result));
                 } else {
                     setCode('');
                 }
-
                 setResponseText(explanation);
             }
+
+            if (user) {
+                await addDoc(collection(db, "users", user.uid, "history"), {
+                    prompt,
+                    code,
+                    language,
+                    createdAt: serverTimestamp()
+                });
+            }
+
+            toast.success("✅ Code generated successfully!");
+            setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
         } catch (err) {
-            console.error('❌ Code generation error:', err);
-            setError(`An error occurred while generating code: ${err.message || 'Unknown error'}`);
+            console.error("❌ Code generation error:", err);
+            setError(`An error occurred while generating code: ${err.message || "Unknown error"}`);
+            toast.error("Failed to generate code.");
         } finally {
             setLoading(false);
         }
     };
-
 
     const handleExplainCode = () => {
         if (!code.trim()) return;
@@ -72,74 +84,82 @@ const CodeEditor = () => {
         setSelectedTemplate(template);
     };
 
+    const downloadCode = () => {
+        const blob = new Blob([code], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `dex-code.${language}`;
+        link.click();
+    };
+
     return (
-        <div className="w-screen h-screen bg-gradient-to-br from-[#05070d] via-[#0d0f1b] to-[#0c0e14] text-white flex flex-col">
-            <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
-                <aside className="w-full md:w-1/3 lg:w-1/4 px-6 py-8 bg-[#0f111a] border-r border-gray-800 flex flex-col gap-6">
-                    <h2 className="text-xl font-semibold">Prompt</h2>
+        <div className="h-screen overflow-y-auto bg-gradient-to-br from-[#05070d] via-[#0d0f1b] to-[#0c0e14] text-white flex flex-col">
+            <div className="w-full max-w-4xl mx-auto px-4 py-10">
+                {/* Templates */}
+                <div className="flex flex-wrap gap-2 justify-center mb-6">
+                    {templates.map((tpl, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => handleTemplateClick(tpl)}
+                            className={`text-xs border border-gray-600 rounded-full px-3 py-1 hover:bg-gray-700 transition ${selectedTemplate === tpl ? 'bg-gray-700' : ''}`}
+                        >
+                            {tpl.split(':')[0]}
+                        </button>
+                    ))}
+                </div>
 
-                    <div className="flex flex-wrap gap-2">
-                        {templates.map((tpl, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => handleTemplateClick(tpl)}
-                                className={`text-xs border border-gray-600 rounded-full px-3 py-1 hover:bg-gray-700 transition ${selectedTemplate === tpl ? 'bg-gray-700' : ''}`}
-                            >
-                                {tpl.split(':')[0]}
-                            </button>
-                        ))}
-                    </div>
+                {/* Prompt */}
+                <textarea
+                    rows="5"
+                    className="w-full p-4 bg-[#181a27] border border-gray-700 rounded-md resize-none focus:outline-none text-white mb-4"
+                    placeholder="Ask Dex..."
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                />
 
-                    <textarea
-                        rows="8"
-                        className="w-full p-3 bg-[#181a27] border border-gray-700 rounded-md resize-none focus:outline-none text-white"
-                        placeholder="Describe the code you want..."
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                    />
+                {/* Generate */}
+                <div className="flex justify-center mb-6">
                     <button
                         onClick={handleGenerate}
                         disabled={loading}
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 rounded-md transition font-semibold text-center"
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-6 rounded-md transition font-semibold"
                     >
-                        {loading ? 'Generating...' : '🚀 Generate Code'}
+                        {loading ? "Generating..." : "🚀 Generate Code"}
                     </button>
+                </div>
 
-                    {code && (
-                        <button
-                            onClick={handleExplainCode}
-                            className="mt-2 border border-white text-sm px-4 py-1 rounded hover:bg-white hover:text-black transition"
-                        >
-                            🧠 Explain This Code
-                        </button>
-                    )}
-
-                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-                    {responseText && (
-                        <div className="mt-4 text-sm text-gray-300 whitespace-pre-line">
-                            {responseText}
-                        </div>
-                    )}
-                </aside>
-
+                {/* Controls */}
                 {code && (
-                    <section className="flex-1 bg-[#0a0b10] p-6 overflow-auto">
-                        <Editor
-                            height="100%"
-                            language={language}
-                            theme="vs-dark"
-                            value={code}
-                            options={{
-                                readOnly: true,
-                                fontSize: 14,
-                                minimap: { enabled: false },
-                                wordWrap: 'on',
-                                padding: { top: 20, bottom: 20 }
-                            }}
-                        />
-                    </section>
+                    <div className="flex justify-center gap-4 flex-wrap mb-4">
+                        <button onClick={handleExplainCode} className="border border-white text-sm px-4 py-1 rounded hover:bg-white hover:text-black transition">Explain</button>
+                        <button onClick={downloadCode} className="bg-gray-700 text-sm px-4 py-1 rounded hover:bg-gray-600">📥 Download</button>
+                        <button onClick={() => { navigator.clipboard.writeText(code); toast.success("Code copied!"); }} className="bg-gray-700 text-sm px-4 py-1 rounded hover:bg-gray-600">📋 Copy</button>
+                    </div>
                 )}
-            </main>
+
+                {/* Explanation */}
+                {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+                {responseText &&
+                    <p className="text-sm text-gray-300 mb-4 whitespace-pre-line">{responseText}</p>
+                }
+
+                {/* Editor */}
+                {code && (
+                    <Editor
+                        height="400px"
+                        language={language}
+                        theme="vs-dark"
+                        value={code}
+                        options={{
+                            readOnly: true,
+                            fontSize: 14,
+                            minimap: { enabled: false },
+                            wordWrap: 'on',
+                            padding: { top: 20, bottom: 20 }
+                        }}
+                    />
+                )}
+            </div>
         </div>
     );
 };
