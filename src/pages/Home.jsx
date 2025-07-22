@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import CodeEditor from '../components/CodeEditor';
+import HistoryPanel from '../components/HistoryPanel';
 import toast from 'react-hot-toast';
 
 const Home = () => {
     const { user, logout } = useAuth();
+    const [selectedItem, setSelectedItem] = useState(null);
 
     const handleLogout = async () => {
         try {
@@ -16,20 +18,17 @@ const Home = () => {
         }
     };
 
-
     return (
         <div className="w-screen h-screen flex flex-col">
+            {/* Navbar */}
             <nav className="flex items-center justify-between bg-[#0f0f0f] border-b border-gray-800 px-6 py-4 shadow-sm">
                 <div className="text-white font-bold text-xl">dex.ai</div>
                 <div className="flex items-center gap-4">
-                    {/* Display Name if available */}
                     {user?.displayName && (
                         <p className="text-sm text-gray-300 hidden sm:block">
                             {user.displayName}
                         </p>
                     )}
-
-                    {/* Profile Picture if available */}
                     {user?.photoURL && (
                         <img
                             src={user.photoURL}
@@ -37,12 +36,9 @@ const Home = () => {
                             className="w-8 h-8 rounded-full border border-purple-500"
                         />
                     )}
-
-                    {/* Email fallback */}
                     {!user?.displayName && (
                         <p className="text-sm text-gray-400 hidden sm:block">{user?.email}</p>
                     )}
-
                     <button
                         onClick={handleLogout}
                         className="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-md transition"
@@ -52,9 +48,12 @@ const Home = () => {
                 </div>
             </nav>
 
-            {/* Main Code Editor UI */}
-            <div className="flex-1 overflow-hidden">
-                <CodeEditor />
+            {/* Layout */}
+            <div className="flex-1 flex overflow-hidden">
+                <HistoryPanel onSelect={setSelectedItem} />
+                <div className="flex-1 overflow-auto">
+                    <CodeEditor selectedItem={selectedItem} />
+                </div>
             </div>
         </div>
     );

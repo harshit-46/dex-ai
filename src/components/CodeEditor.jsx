@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { generateCodeStream } from '../utils/mistral';
 import Editor from '@monaco-editor/react';
 import { useAuth } from '../context/AuthContext';
@@ -19,7 +19,7 @@ const detectLanguage = (text) => {
     return match ? match[1] : 'javascript';
 };
 
-const CodeEditor = () => {
+const CodeEditor = ({ selectedItem }) => {
     const [prompt, setPrompt] = useState('');
     const [code, setCode] = useState('');
     const [responseText, setResponseText] = useState('');
@@ -28,6 +28,15 @@ const CodeEditor = () => {
     const [language, setLanguage] = useState('javascript');
     const [selectedTemplate, setSelectedTemplate] = useState('');
     const { user } = useAuth();
+
+    useEffect(() => {
+        if (selectedItem) {
+            setPrompt(selectedItem.prompt);
+            setCode(selectedItem.code || '');
+            setLanguage(selectedItem.language || 'javascript');
+            setResponseText('');
+        }
+    }, [selectedItem]);
 
     const handleGenerate = async () => {
         if (!prompt.trim()) return;
