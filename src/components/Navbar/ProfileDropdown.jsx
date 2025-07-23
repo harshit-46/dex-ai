@@ -1,14 +1,14 @@
 import React, { useCallback } from 'react';
 import { User, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-hot-toast'; 
 
 const ProfileDropdown = ({ isOpen, close }) => {
     const { logout } = useAuth();
 
     const handleLogout = useCallback(async () => {
-        const confirm = window.confirm('Are you sure you want to sign out?');
-        if (!confirm) return;
         await logout();
+        toast.success("Logged out successfully!")
         close();
     }, [logout, close]);
 
