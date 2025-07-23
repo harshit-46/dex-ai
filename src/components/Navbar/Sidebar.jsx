@@ -265,7 +265,7 @@ import HistoryList from './HistoryList';
 import SidebarFooter from './SidebarFooter';
 
 const Sidebar = ({ onSelect, onNewChat }) => {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <div className="h-screen flex bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">

@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateCodeStream } from '../utils/mistral';
 import Editor from '@monaco-editor/react';
 import { useAuth } from '../context/AuthContext';
@@ -20,10 +20,10 @@ const detectLanguage = (text) => {
 const CodeEditor = ({ selectedItem }) => {
     const [prompt, setPrompt] = useState('');
     const [code, setCode] = useState('');
+    const [language, setLanguage] = useState('javascript');
     const [responseText, setResponseText] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [language, setLanguage] = useState('javascript');
     const [selectedTemplate, setSelectedTemplate] = useState('');
     const { user } = useAuth();
 
@@ -47,30 +47,34 @@ const CodeEditor = ({ selectedItem }) => {
         try {
             const stream = await generateCodeStream(prompt);
             let result = '';
+            let currentLanguage = 'javascript';
+            
             for await (const chunk of stream) {
                 result += chunk;
                 const codeMatch = result.match(/```(?:\w+)?\n([\s\S]*?)```/);
                 const explanation = result.replace(/```[\s\S]*?```/, '').trim();
+                
                 if (codeMatch) {
                     setCode(codeMatch[1].trim());
-                    setLanguage(detectLanguage(result));
+                    currentLanguage = detectLanguage(result);
+                    setLanguage(currentLanguage);
                 } else {
                     setCode('');
                 }
                 setResponseText(explanation);
             }
 
-            if (user) {
+            if (user && code) { // Only save if there's actual code
                 await addDoc(collection(db, "users", user.uid, "history"), {
                     prompt,
                     code,
-                    language,
+                    language: currentLanguage,
                     createdAt: serverTimestamp()
                 });
             }
             setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
         } catch (err) {
-            console.error("❌ Code generation error:", err);
+            console.error("Code generation error:", err);
             setError(`An error occurred while generating code: ${err.message || "Unknown error"}`);
             toast.error("Failed to generate code.");
         } finally {
@@ -117,7 +121,7 @@ const CodeEditor = ({ selectedItem }) => {
                 <textarea
                     rows="5"
                     className="w-full p-4 bg-[#181a27] border border-gray-700 rounded-md resize-none focus:outline-none text-white mb-4"
-                    placeholder="Ask Dex..."
+                    placeholder="How can I help you today?"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                 />

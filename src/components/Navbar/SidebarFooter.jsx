@@ -19,11 +19,11 @@ const SidebarFooter = ({ isOpen }) => {
     }, []);
 
     return (
-        <div className="p-4 border-t border-slate-700/50 relative profile-dropdown">
+        <div className="p-4 relative profile-dropdown">
             {isOpen ? (
                 <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group"
+                    className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group cursor-pointer"
                 >
                     <div className="w-8 h-8 rounded-full border-2 border-slate-600 overflow-hidden bg-slate-700 flex items-center justify-center">
                         {!imgError && user?.photoURL ? (
