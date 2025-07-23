@@ -1,0 +1,71 @@
+import React, { useState, useEffect } from 'react';
+import { CircleUserRound } from 'lucide-react';
+import ProfileDropdown from './ProfileDropdown';
+import { useAuth } from '../../context/AuthContext';
+
+const SidebarFooter = ({ isOpen }) => {
+    const { user } = useAuth();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [imgError, setImgError] = useState(false);
+
+    useEffect(() => {
+        const closeDropdown = (e) => {
+            if (!e.target.closest('.profile-dropdown')) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', closeDropdown);
+        return () => document.removeEventListener('mousedown', closeDropdown);
+    }, []);
+
+    return (
+        <div className="p-4 border-t border-slate-700/50 relative profile-dropdown">
+            {isOpen ? (
+                <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group"
+                >
+                    <div className="w-8 h-8 rounded-full border-2 border-slate-600 overflow-hidden bg-slate-700 flex items-center justify-center">
+                        {!imgError && user?.photoURL ? (
+                            <img
+                                src={user.photoURL}
+                                alt={user?.displayName}
+                                className="w-full h-full object-cover"
+                                onError={() => setImgError(true)}
+                            />
+                        ) : (
+                            <CircleUserRound size={20} className="text-slate-400" />
+                        )}
+                    </div>
+                    <div className="flex-1 text-left">
+                        <p className="text-sm font-medium text-slate-200">{user?.displayName || 'User'}</p>
+                        <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+                    </div>
+                </button>
+            ) : (
+                <div className="flex justify-center">
+                    <button
+                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                        className="p-1 rounded-full hover:bg-slate-700/50 transition-all duration-200"
+                    >
+                        <div className="w-8 h-8 rounded-full border-2 border-slate-600 bg-slate-700 flex items-center justify-center">
+                            {!imgError && user?.photoURL ? (
+                                <img
+                                    src={user.photoURL}
+                                    alt={user?.displayName}
+                                    className="w-full h-full object-cover"
+                                    onError={() => setImgError(true)}
+                                />
+                            ) : (
+                                <CircleUserRound size={20} className="text-slate-400" />
+                            )}
+                        </div>
+                    </button>
+                </div>
+            )}
+            {dropdownOpen && <ProfileDropdown isOpen={isOpen} close={() => setDropdownOpen(false)} />}
+        </div>
+    );
+};
+
+export default SidebarFooter;

@@ -98,7 +98,7 @@ const CodeEditor = ({ selectedItem }) => {
     };
 
     return (
-        <div className="h-screen overflow-y-auto bg-gradient-to-br from-[#05070d] via-[#0d0f1b] to-[#0c0e14] text-white flex flex-col">
+        <div className="h-screen overflow-y-auto bg-[#1E2019] text-white flex flex-col">
             <div className="w-full max-w-4xl mx-auto px-4 py-10">
                 {/* Templates */}
                 <div className="flex flex-wrap gap-2 justify-center mb-6">

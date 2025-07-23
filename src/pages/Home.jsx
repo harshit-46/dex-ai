@@ -1,57 +1,13 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import CodeEditor from '../components/CodeEditor';
-//import HistoryPanel from '../components/HistoryPanel';
-import Navbar from '../components/Navbar';
-import toast from 'react-hot-toast';
+import Navbar from '../components/Navbar/Sidebar';
 
 const Home = () => {
-    const { user, logout } = useAuth();
     const [selectedItem, setSelectedItem] = useState(null);
-
-    const handleLogout = async () => {
-        try {
-            await logout();
-            toast.success('Logged out successfully');
-        } catch (err) {
-            toast.error('Logout failed');
-            console.error('Logout error:', err);
-        }
-    };
 
     return (
         <div className="w-screen h-screen flex flex-col">
-            {/* Navbar */}
-            <nav className="flex items-center justify-between bg-[#0f0f0f] border-b border-gray-800 px-6 py-4 shadow-sm">
-                <div className="text-white font-bold text-xl">dex.ai</div>
-                <div className="flex items-center gap-4">
-                    {user?.displayName && (
-                        <p className="text-sm text-gray-300 hidden sm:block">
-                            {user.displayName}
-                        </p>
-                    )}
-                    {user?.photoURL && (
-                        <img
-                            src={user.photoURL}
-                            alt="Profile"
-                            className="w-8 h-8 rounded-full border border-purple-500"
-                        />
-                    )}
-                    {!user?.displayName && (
-                        <p className="text-sm text-gray-400 hidden sm:block">{user?.email}</p>
-                    )}
-                    <button
-                        onClick={handleLogout}
-                        className="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-md transition"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </nav>
-
-            {/* Layout */}
             <div className="flex-1 flex overflow-hidden">
-                {/*<HistoryPanel onSelect={setSelectedItem} />*/}
                 <Navbar/>
                 <div className="flex-1 overflow-auto">
                     <CodeEditor selectedItem={selectedItem} />
