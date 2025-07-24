@@ -113,7 +113,9 @@ const SignUp = () => {
             });
 
             await sendEmailVerification(user);
-            toast.success("Signup successful! Please check your email to verify your account.")
+            toast.success("Signup successful! Please check your email to verify your account.");
+            console.log("Crediantials are: ", user)
+            console.log("Signup successful with creadiantials : " , user.displayName , user.email);
             navigate('/verify');
         } catch (err) {
             let errorMessage = 'An error occurred during registration';

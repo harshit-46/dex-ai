@@ -48,12 +48,12 @@ const CodeEditor = ({ selectedItem }) => {
             const stream = await generateCodeStream(prompt);
             let result = '';
             let currentLanguage = 'javascript';
-            
+
             for await (const chunk of stream) {
                 result += chunk;
                 const codeMatch = result.match(/```(?:\w+)?\n([\s\S]*?)```/);
                 const explanation = result.replace(/```[\s\S]*?```/, '').trim();
-                
+
                 if (codeMatch) {
                     setCode(codeMatch[1].trim());
                     currentLanguage = detectLanguage(result);
@@ -64,7 +64,7 @@ const CodeEditor = ({ selectedItem }) => {
                 setResponseText(explanation);
             }
 
-            if (user && code) { // Only save if there's actual code
+            if (user && code) {
                 await addDoc(collection(db, "users", user.uid, "history"), {
                     prompt,
                     code,
@@ -72,10 +72,11 @@ const CodeEditor = ({ selectedItem }) => {
                     createdAt: serverTimestamp()
                 });
             }
+
             setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
         } catch (err) {
             console.error("Code generation error:", err);
-            setError(`An error occurred while generating code: ${err.message || "Unknown error"}`);
+            setError(`An error occurred: ${err.message || "Unknown error"}`);
             toast.error("Failed to generate code.");
         } finally {
             setLoading(false);
@@ -102,57 +103,79 @@ const CodeEditor = ({ selectedItem }) => {
     };
 
     return (
-        <div className="h-screen overflow-y-auto bg-[#1E2019] text-white flex flex-col">
-            <div className="w-full max-w-4xl mx-auto px-4 py-10">
+        <div className="min-h-screen bg-black text-white flex flex-col items-center py-10 px-4">
+            <div className="w-full max-w-4xl bg-[#101012]/60 backdrop-blur-md border border-white/10 rounded-2xl shadow-lg p-6">
+
                 {/* Templates */}
-                <div className="flex flex-wrap gap-2 justify-center mb-6">
+                <div className="flex flex-wrap justify-center gap-2 mb-6">
                     {templates.map((tpl, idx) => (
                         <button
                             key={idx}
                             onClick={() => handleTemplateClick(tpl)}
-                            className={`text-xs border border-gray-600 rounded-full px-3 py-1 hover:bg-gray-700 transition ${selectedTemplate === tpl ? 'bg-gray-700' : ''}`}
+                            className={`text-xs border border-gray-600 rounded-full px-3 py-1 hover:bg-gray-700 transition ${selectedTemplate === tpl ? 'bg-gray-700' : ''
+                                }`}
                         >
-                            {tpl.split(':')[0]}
+                            {tpl}
                         </button>
                     ))}
                 </div>
 
-                {/* Prompt */}
+                {/* Prompt Input */}
                 <textarea
-                    rows="5"
-                    className="w-full p-4 bg-[#181a27] border border-gray-700 rounded-md resize-none focus:outline-none text-white mb-4"
+                    rows="4"
+                    className="w-full bg-[#0e0e0e] text-white border border-gray-700 rounded-lg p-4 mb-4 focus:outline-none resize-none"
                     placeholder="How can I help you today?"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                 />
 
-                {/* Generate */}
+                {/* Generate Button */}
                 <div className="flex justify-center mb-6">
                     <button
                         onClick={handleGenerate}
                         disabled={loading}
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-6 rounded-md transition font-semibold"
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md"
                     >
-                        {loading ? "Generating..." : "🚀 Generate Code"}
+                        {loading ? 'Generating...' : '🚀 Generate Code'}
                     </button>
                 </div>
 
-                {/* Controls */}
+                {/* Action Buttons */}
                 {code && (
-                    <div className="flex justify-center gap-4 flex-wrap mb-4">
-                        <button onClick={handleExplainCode} className="border border-white text-sm px-4 py-1 rounded hover:bg-white hover:text-black transition">Explain</button>
-                        <button onClick={downloadCode} className="bg-gray-700 text-sm px-4 py-1 rounded hover:bg-gray-600">📥 Download</button>
-                        <button onClick={() => { navigator.clipboard.writeText(code); toast.success("Code copied!"); }} className="bg-gray-700 text-sm px-4 py-1 rounded hover:bg-gray-600">📋 Copy</button>
+                    <div className="flex justify-center flex-wrap gap-4 mb-6">
+                        <button
+                            onClick={handleExplainCode}
+                            className="border border-white px-4 py-1 rounded hover:bg-white hover:text-black text-sm"
+                        >
+                            🧠 Explain
+                        </button>
+                        <button
+                            onClick={downloadCode}
+                            className="bg-gray-700 px-4 py-1 rounded hover:bg-gray-600 text-sm"
+                        >
+                            📥 Download
+                        </button>
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(code);
+                                toast.success('Code copied!');
+                            }}
+                            className="bg-gray-700 px-4 py-1 rounded hover:bg-gray-600 text-sm"
+                        >
+                            📋 Copy
+                        </button>
                     </div>
                 )}
 
-                {/* Explanation */}
-                {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
-                {responseText &&
-                    <p className="text-sm text-gray-300 mb-4 whitespace-pre-line">{responseText}</p>
-                }
+                {/* Explanation/Error */}
+                {error && (
+                    <p className="text-red-500 text-sm text-center mb-4">{error}</p>
+                )}
+                {responseText && (
+                    <pre className="text-gray-300 text-sm whitespace-pre-wrap mb-4">{responseText}</pre>
+                )}
 
-                {/* Editor */}
+                {/* Monaco Editor */}
                 {code && (
                     <Editor
                         height="400px"
@@ -164,7 +187,7 @@ const CodeEditor = ({ selectedItem }) => {
                             fontSize: 14,
                             minimap: { enabled: false },
                             wordWrap: 'on',
-                            padding: { top: 20, bottom: 20 }
+                            padding: { top: 20, bottom: 20 },
                         }}
                     />
                 )}

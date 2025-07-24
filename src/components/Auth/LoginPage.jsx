@@ -133,15 +133,6 @@ const LoginPage = () => {
                     </header>
 
                     <Card className="bg-gray-800/80 backdrop-blur-xl border border-gray-700/50 shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300">
-                        <CardHeader className="space-y-2 pb-4">
-                            <CardTitle className="text-xl font-semibold text-center text-white">
-                                Sign In
-                            </CardTitle>
-                            <CardDescription className="text-center text-gray-400 text-sm">
-                                Enter your credentials to access your workspace
-                            </CardDescription>
-                        </CardHeader>
-
                         <form onSubmit={handleSubmit}>
                             <CardContent className="space-y-5">
                                 {error && (
@@ -221,7 +212,7 @@ const LoginPage = () => {
                             <CardFooter className="flex flex-col space-y-4 pt-2">
                                 <Button
                                     type="submit"
-                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium cursor-pointer transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={isLoading || isGoogleLoading}
                                 >
                                     {isLoading ? (
@@ -247,7 +238,7 @@ const LoginPage = () => {
                                     type="button"
                                     variant="outline"
                                     onClick={handleGoogleLogin}
-                                    className="w-full border-gray-600 text-black hover:bg-gray-700 hover:border-gray-500 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full border-gray-600 text-black hover:bg-gray-700 hover:border-gray-500 hover:text-white transition-all duration-200 h-11 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={isLoading || isGoogleLoading}
                                 >
                                     {isGoogleLoading ? (
