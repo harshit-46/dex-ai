@@ -1,217 +1,14 @@
-/*
-
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff, Sparkles, Code2, Brain } from "lucide-react";
-import aiCodingBackground from "../../assets/cover.png";
-
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-
-const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false); 
-    const [error, setError] = useState('');
-    const { loginWithGoogle } = useAuth();
-    const navigate = useNavigate();
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            navigate('/dashboard');
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    const handleGoogleLogin = async () => {
-        try {
-            const user = await loginWithGoogle();
-            if(user){
-                navigate('/dashboard');
-            }
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    return (
-        <div className="min-h-screen flex">
-            <div className="flex-1 flex items-center justify-center p-8 bg-gray-900">
-                <div className="w-full max-w-md space-y-8">
-                    <div className="text-center space-y-2">
-                        <div className="flex items-center justify-center space-x-2 mb-4">
-                            <div className="p-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30">
-                                <Brain className="h-8 w-8 text-white" />
-                            </div>
-                            <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                Dex.ai
-                            </div>
-                        </div>
-                        <h1 className="text-3xl font-bold tracking-tight text-white">
-                            Welcome
-                        </h1>
-                        <p className="text-gray-400">
-                            Sign in to your AI code companion
-                        </p>
-                    </div>
-
-                    <Card className="bg-gray-800/70 backdrop-blur-sm border border-gray-700 shadow-xl shadow-blue-500/10">
-                        <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl font-semibold text-center text-white">
-                                Sign in
-                            </CardTitle>
-                            <CardDescription className="text-center text-gray-400">
-                                Enter your credentials to access your workspace
-                            </CardDescription>
-                        </CardHeader>
-                        <form onSubmit={handleSubmit}>
-                            <CardContent className="space-y-4">
-                                {error && (
-                                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm">
-                                        {error}
-                                    </div>
-                                )}
-                                
-                                <div className="space-y-2">
-                                    <Label htmlFor="email" className="text-white">Email</Label>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="password" className="text-white">Password</Label>
-                                    <div className="relative">
-                                        <Input
-                                            id="password"
-                                            type={showPassword ? "text" : "password"}
-                                            placeholder="Enter your password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            required
-                                            className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:ring-blue-500 focus:border-blue-500 pr-10"
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff className="h-4 w-4 text-gray-400" />
-                                            ) : (
-                                                <Eye className="h-4 w-4 text-gray-400" />
-                                            )}
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="text-sm">
-                                        <a href="#" className="text-blue-400 hover:text-purple-400 transition-colors">
-                                            Forgot password?
-                                        </a>
-                                    </div>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex flex-col space-y-4">
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg shadow-blue-500/30 transition-all duration-200"
-                                >
-                                    <Sparkles className="w-4 h-4 mr-2" />
-                                    Sign in
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={handleGoogleLogin}
-                                    className="w-full border-gray-600 text-white hover:bg-gray-700"
-                                >
-                                    Continue with Google
-                                </Button>
-                                
-                                <p className="text-center text-sm text-gray-400">
-                                    Don't have an account?{" "}
-                                    <Link to="/signup" className="text-blue-400 hover:text-purple-400 transition-colors font-medium">
-                                        Sign up
-                                    </Link>
-                                </p>
-                            </CardFooter>
-                        </form>
-                    </Card>
-                </div>
-            </div>
-
-            <div className="hidden lg:flex flex-1 relative overflow-hidden">
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${aiCodingBackground})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-transparent to-purple-600/20" />
-                <div className="absolute inset-0 bg-black/20" />
-                <div className="relative z-10 flex flex-col justify-center items-center text-center p-12 text-white">
-                    <div className="max-w-md space-y-6">
-                        <h2 className="text-4xl font-bold">
-                            Your AI Code Companion
-                        </h2>
-                        <p className="text-xl text-white/90">
-                            Enhance your coding experience with intelligent assistance, smart suggestions, and automated workflows.
-                        </p>
-                        <div className="flex items-center justify-center space-x-4 text-white/80">
-                            <div className="flex items-center space-x-2">
-                                <Sparkles className="h-5 w-5" />
-                                <span>Smart AI</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Code2 className="h-5 w-5" />
-                                <span>Code Gen</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Brain className="h-5 w-5" />
-                                <span>Learning</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default LoginPage;
-
-*/
-
-
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, Sparkles, Code2, Brain, Mail, Lock, AlertCircle } from "lucide-react";
 import aiCodingBackground from "../../assets/cover.png";
-
-import React, { useState, useCallback } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../utils/firebase';
-// import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -220,16 +17,13 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-    
+    const navigate = useNavigate();
     const { loginWithGoogle } = useAuth();
-    // const navigate = useNavigate();
 
-    // Clear error when user starts typing
     const clearError = useCallback(() => {
         if (error) setError('');
     }, [error]);
 
-    // Handle input changes with error clearing
     const handleEmailChange = useCallback((e) => {
         setEmail(e.target.value);
         clearError();
@@ -240,12 +34,10 @@ const LoginPage = () => {
         clearError();
     }, [clearError]);
 
-    // Toggle password visibility
     const togglePasswordVisibility = useCallback(() => {
         setShowPassword(prev => !prev);
     }, []);
 
-    // Form validation
     const validateForm = () => {
         if (!email.trim()) {
             setError('Email is required');
@@ -271,9 +63,19 @@ const LoginPage = () => {
         setIsLoading(true);
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // navigate('/dashboard');
+            navigate('/dashboard');
         } catch (err) {
-            setError(err.message);
+            let errorMessage = 'An error occurred during sign in';
+            if (err.code === 'auth/user-not-found') {
+                errorMessage = 'No account found with this email address';
+            } else if (err.code === 'auth/wrong-password') {
+                errorMessage = 'Incorrect password';
+            } else if (err.code === 'auth/invalid-email') {
+                errorMessage = 'Invalid email address';
+            } else if (err.code === 'auth/too-many-requests') {
+                errorMessage = 'Too many failed attempts. Please try again later';
+            }
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -286,27 +88,35 @@ const LoginPage = () => {
         try {
             const user = await loginWithGoogle();
             if (user) {
-                // navigate('/dashboard');
+                navigate('/dashboard');
             }
         } catch (err) {
-            setError(err.message);
+            let errorMessage = 'Failed to sign in with Google';
+            if (err.code === 'auth/popup-closed-by-user') {
+                errorMessage = 'Sign in was cancelled';
+            } else if (err.code === 'auth/network-request-failed') {
+                errorMessage = 'Network error. Please check your connection';
+            }
+            setError(errorMessage);
         } finally {
             setIsGoogleLoading(false);
         }
+    };
+
+    const handleForgotPassword = () => {
+        navigate('/forgotpassword');
     };
 
     return (
         <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
             <div className="flex-1 flex items-center justify-center p-4 sm:p-8">
                 <div className="w-full max-w-md space-y-8">
-                    {/* Header */}
                     <header className="text-center space-y-4">
                         <div className="flex items-center justify-center space-x-3 mb-6">
                             <div className="relative">
                                 <div className="p-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30 transform hover:scale-105 transition-transform duration-200">
                                     <Brain className="h-8 w-8 text-white" />
                                 </div>
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                             </div>
                             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                                 Dex.ai
@@ -322,7 +132,6 @@ const LoginPage = () => {
                         </div>
                     </header>
 
-                    {/* Login Card */}
                     <Card className="bg-gray-800/80 backdrop-blur-xl border border-gray-700/50 shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300">
                         <CardHeader className="space-y-2 pb-4">
                             <CardTitle className="text-xl font-semibold text-center text-white">
@@ -333,9 +142,8 @@ const LoginPage = () => {
                             </CardDescription>
                         </CardHeader>
 
-                        <div onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit}>
                             <CardContent className="space-y-5">
-                                {/* Error Message */}
                                 {error && (
                                     <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm flex items-center space-x-2 animate-in slide-in-from-top-2 duration-300">
                                         <AlertCircle className="h-4 w-4 flex-shrink-0" />
@@ -343,7 +151,6 @@ const LoginPage = () => {
                                     </div>
                                 )}
 
-                                {/* Email Field */}
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-white text-sm font-medium">
                                         Email Address
@@ -364,7 +171,6 @@ const LoginPage = () => {
                                     </div>
                                 </div>
 
-                                {/* Password Field */}
                                 <div className="space-y-2">
                                     <Label htmlFor="password" className="text-white text-sm font-medium">
                                         Password
@@ -400,11 +206,12 @@ const LoginPage = () => {
                                     </div>
                                 </div>
 
-                                {/* Forgot Password Link */}
                                 <div className="flex justify-end">
                                     <button
+                                        type="button"
                                         className="text-blue-400 hover:text-purple-400 text-sm transition-colors duration-200 hover:underline bg-transparent border-none cursor-pointer"
-                                        onClick={() => console.log('Navigate to forgot password')}
+                                        onClick={handleForgotPassword}
+                                        disabled={isLoading || isGoogleLoading}
                                     >
                                         Forgot password?
                                     </button>
@@ -412,7 +219,6 @@ const LoginPage = () => {
                             </CardContent>
 
                             <CardFooter className="flex flex-col space-y-4 pt-2">
-                                {/* Sign In Button */}
                                 <Button
                                     type="submit"
                                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -431,19 +237,17 @@ const LoginPage = () => {
                                     )}
                                 </Button>
 
-                                {/* Divider */}
                                 <div className="relative flex items-center w-full">
                                     <div className="flex-grow border-t border-gray-600"></div>
                                     <span className="px-3 text-gray-400 text-sm bg-gray-800/80">or</span>
                                     <div className="flex-grow border-t border-gray-600"></div>
                                 </div>
 
-                                {/* Google Login Button */}
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={handleGoogleLogin}
-                                    className="w-full border-gray-600 text-white hover:bg-gray-700 hover:border-gray-500 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full border-gray-600 text-black hover:bg-gray-700 hover:border-gray-500 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={isLoading || isGoogleLoading}
                                 >
                                     {isGoogleLoading ? (
@@ -464,23 +268,18 @@ const LoginPage = () => {
                                     )}
                                 </Button>
 
-                                {/* Sign Up Link */}
                                 <p className="text-center text-sm text-gray-400">
                                     Don't have an account?{" "}
-                                    <button
-                                        className="text-blue-400 hover:text-purple-400 font-medium transition-colors duration-200 hover:underline bg-transparent border-none cursor-pointer"
-                                        onClick={() => console.log('Navigate to signup')}
-                                    >
-                                        Sign up
-                                    </button>
+                                    <Link to="/signup" className="text-blue-400 hover:text-purple-400 font-medium transition-colors duration-200 hover:underline">
+                                        Create your account
+                                    </Link>
                                 </p>
                             </CardFooter>
-                        </div>
+                        </form>
                     </Card>
                 </div>
             </div>
 
-            {/* Right Panel - Hero Section */}
             <div className="hidden lg:flex flex-1 relative overflow-hidden">
                 <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -488,8 +287,7 @@ const LoginPage = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-transparent to-purple-600/20" />
                 <div className="absolute inset-0 bg-black/20" />
-                
-                {/* Animated Background Elements */}
+
                 <div className="absolute top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse" />
                 <div className="absolute bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000" />
                 <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl animate-pulse delay-2000" />
@@ -505,7 +303,6 @@ const LoginPage = () => {
                             </p>
                         </div>
 
-                        {/* Enhanced Features */}
                         <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
                             <div className="flex items-center space-x-3 text-white/90 bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/10 hover:bg-white/10 transition-colors duration-200">
                                 <div className="p-2 rounded-lg bg-blue-500/20">
@@ -524,22 +321,6 @@ const LoginPage = () => {
                                     <Brain className="h-5 w-5 text-cyan-400" />
                                 </div>
                                 <span className="font-medium">Continuous Learning</span>
-                            </div>
-                        </div>
-
-                        {/* Stats */}
-                        <div className="flex justify-center space-x-8 text-center">
-                            <div className="space-y-1">
-                                <div className="text-2xl font-bold text-white">10K+</div>
-                                <div className="text-sm text-white/60">Developers</div>
-                            </div>
-                            <div className="space-y-1">
-                                <div className="text-2xl font-bold text-white">1M+</div>
-                                <div className="text-sm text-white/60">Lines Generated</div>
-                            </div>
-                            <div className="space-y-1">
-                                <div className="text-2xl font-bold text-white">99.9%</div>
-                                <div className="text-sm text-white/60">Uptime</div>
                             </div>
                         </div>
                     </div>

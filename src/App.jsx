@@ -2,9 +2,11 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Auth/LoginPage';
 import Signup from './components/Auth/SignUp';
+import ForgotPassword from './components/Auth/ForgotPassword';
 import Home from './pages/Home';
 import VerifyEmail from './pages/VerifyEmail';
 import AuthRoute from './components/Auth/AuthRoute';
+
 
 const App = () => {
   return (
@@ -13,15 +15,11 @@ const App = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/verify" element={<VerifyEmail />} />
-      <Route
-        path="/dashboard"
-        element={
+      <Route path="/dashboard" element={
           <AuthRoute>
             <Home />
-          </AuthRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" />} />
+          </AuthRoute>}/>
+      <Route path="/forgotpassword" element={<ForgotPassword/>} />
     </Routes>
   );
 };
