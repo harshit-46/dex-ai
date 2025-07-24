@@ -42,9 +42,9 @@ const ForgotPassword = () => {
         e.preventDefault();
         setError('');
         setSuccess(false);
-        
+
         if (!validateForm()) return;
-        
+
         setIsLoading(true);
         try {
             await sendPasswordResetEmail(auth, email, {
@@ -75,7 +75,7 @@ const ForgotPassword = () => {
 
     const handleResendEmail = () => {
         setSuccess(false);
-        handleSubmit({ preventDefault: () => {} });
+        handleSubmit({ preventDefault: () => { } });
     };
 
     return (
@@ -98,7 +98,7 @@ const ForgotPassword = () => {
                                 Reset Password
                             </h1>
                             <p className="text-gray-400 text-sm sm:text-base">
-                                {success 
+                                {success
                                     ? "Check your email for reset instructions"
                                     : "Enter your email to receive a password reset link"
                                 }
@@ -112,7 +112,7 @@ const ForgotPassword = () => {
                                 {success ? "Email Sent!" : "Forgot Password"}
                             </CardTitle>
                             <CardDescription className="text-center text-gray-400 text-sm">
-                                {success 
+                                {success
                                     ? "We've sent a password reset link to your email"
                                     : "No worries, we'll help you reset your password"
                                 }
@@ -130,7 +130,7 @@ const ForgotPassword = () => {
                                             Check Your Email
                                         </h3>
                                         <p className="text-gray-400 text-sm max-w-sm">
-                                            We've sent a password reset link to <span className="text-white font-medium">{email}</span>. 
+                                            We've sent a password reset link to <span className="text-white font-medium">{email}</span>.
                                             Click the link in the email to reset your password.
                                         </p>
                                     </div>
@@ -196,7 +196,7 @@ const ForgotPassword = () => {
                                 <CardFooter className="flex flex-col space-y-4 pt-2">
                                     <Button
                                         type="submit"
-                                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 h-11 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                                         disabled={isLoading}
                                     >
                                         {isLoading ? (
@@ -222,7 +222,7 @@ const ForgotPassword = () => {
                                         type="button"
                                         variant="outline"
                                         onClick={handleResendEmail}
-                                        className="w-full border-gray-600 text-white hover:bg-gray-700 hover:border-gray-500 transition-all duration-200 h-11"
+                                        className="w-full border-gray-600 text-white hover:bg-gray-700 hover:border-gray-500 cursor-pointer transition-all duration-200 h-11"
                                         disabled={isLoading}
                                     >
                                         {isLoading ? (
@@ -243,7 +243,7 @@ const ForgotPassword = () => {
                                     type="button"
                                     variant="ghost"
                                     onClick={handleBackToLogin}
-                                    className="w-full text-gray-400 hover:text-white hover:bg-gray-700/50 transition-all duration-200 h-11"
+                                    className="w-full text-gray-400 hover:text-white cursor-pointer hover:bg-gray-700/50 transition-all duration-200 h-11"
                                 >
                                     <ArrowLeft className="w-4 h-4 mr-2" />
                                     Back to Sign In
@@ -255,6 +255,7 @@ const ForgotPassword = () => {
             </div>
 
             <div className="hidden lg:flex flex-1 relative overflow-hidden">
+                {/* Background Layers */}
                 <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url(${aiCodingBackground})` }}
@@ -262,12 +263,14 @@ const ForgotPassword = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-transparent to-purple-600/20" />
                 <div className="absolute inset-0 bg-black/20" />
 
-                <div className="absolute top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse" />
-                <div className="absolute bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000" />
-                <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl animate-pulse delay-2000" />
+                {/* Decorative Blurs */}
+                <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl animate-pulse" />
+                <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-2xl animate-pulse delay-1000" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl animate-pulse delay-2000" />
 
-                <div className="relative z-10 flex flex-col justify-center items-center text-center p-12 text-white">
-                    <div className="max-w-lg space-y-8">
+                {/* Centered Content */}
+                <div className="relative z-10 flex flex-1 items-center justify-center text-center px-6 py-12 text-white">
+                    <div className="max-w-lg mx-auto space-y-8">
                         <div className="space-y-4">
                             <h2 className="text-4xl font-bold leading-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                                 Secure Account Recovery
@@ -300,6 +303,7 @@ const ForgotPassword = () => {
                     </div>
                 </div>
             </div>
+
         </div>
     );
 };

@@ -45,7 +45,7 @@ const SignUp = () => {
 
     const getPasswordStrength = (password) => {
         if (!password) return { strength: 0, text: '', color: '' };
-        
+
         let strength = 0;
         const checks = {
             length: password.length >= 8,
@@ -101,9 +101,9 @@ const SignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        
+
         if (!validateForm()) return;
-        
+
         setIsLoading(true);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
@@ -115,7 +115,7 @@ const SignUp = () => {
             await sendEmailVerification(user);
             toast.success("Signup successful! Please check your email to verify your account.");
             console.log("Crediantials are: ", user)
-            console.log("Signup successful with creadiantials : " , user.displayName , user.email);
+            console.log("Signup successful with creadiantials : ", user.displayName, user.email);
             navigate('/verify');
         } catch (err) {
             let errorMessage = 'An error occurred during registration';
@@ -138,7 +138,7 @@ const SignUp = () => {
     const handleGoogleSignup = async () => {
         setError('');
         setIsGoogleLoading(true);
-        
+
         try {
             const user = await loginWithGoogle();
             if (user) {
@@ -187,14 +187,6 @@ const SignUp = () => {
                     </header>
 
                     <Card className="bg-gray-800/80 backdrop-blur-xl border border-gray-700/50 shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300">
-                        <CardHeader className="space-y-2 pb-4">
-                            <CardTitle className="text-xl font-semibold text-center text-white">
-                                Create Account
-                            </CardTitle>
-                            <CardDescription className="text-center text-gray-400 text-sm">
-                                Join thousands of developers using AI to code smarter
-                            </CardDescription>
-                        </CardHeader>
 
                         <form onSubmit={handleSubmit}>
                             <CardContent className="space-y-5">
@@ -205,25 +197,7 @@ const SignUp = () => {
                                     </div>
                                 )}
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="fullName" className="text-white text-sm font-medium">
-                                        Full Name
-                                    </Label>
-                                    <div className="relative">
-                                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                        <Input
-                                            id="fullName"
-                                            type="text"
-                                            placeholder="Enter your full name"
-                                            value={formData.fullName}
-                                            onChange={handleInputChange('fullName')}
-                                            required
-                                            autoComplete="name"
-                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
-                                            disabled={isLoading || isGoogleLoading}
-                                        />
-                                    </div>
-                                </div>
+
 
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-white text-sm font-medium">
@@ -239,7 +213,7 @@ const SignUp = () => {
                                             onChange={handleInputChange('email')}
                                             required
                                             autoComplete="email"
-                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
+                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 pl-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
                                             disabled={isLoading || isGoogleLoading}
                                         />
                                     </div>
@@ -259,7 +233,7 @@ const SignUp = () => {
                                             onChange={handleInputChange('password')}
                                             required
                                             autoComplete="new-password"
-                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 pr-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
+                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 pl-10 pr-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
                                             disabled={isLoading || isGoogleLoading}
                                         />
                                         <Button
@@ -287,14 +261,13 @@ const SignUp = () => {
                                                 </span>
                                             </div>
                                             <div className="w-full bg-gray-700 rounded-full h-1.5">
-                                                <div 
-                                                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                                                        passwordStrength.strength === 1 ? 'bg-red-500 w-1/5' :
-                                                        passwordStrength.strength === 2 ? 'bg-orange-500 w-2/5' :
-                                                        passwordStrength.strength === 3 ? 'bg-yellow-500 w-3/5' :
-                                                        passwordStrength.strength === 4 ? 'bg-green-500 w-4/5' :
-                                                        passwordStrength.strength === 5 ? 'bg-green-600 w-full' : 'w-0'
-                                                    }`}
+                                                <div
+                                                    className={`h-1.5 rounded-full transition-all duration-300 ${passwordStrength.strength === 1 ? 'bg-red-500 w-1/5' :
+                                                            passwordStrength.strength === 2 ? 'bg-orange-500 w-2/5' :
+                                                                passwordStrength.strength === 3 ? 'bg-yellow-500 w-3/5' :
+                                                                    passwordStrength.strength === 4 ? 'bg-green-500 w-4/5' :
+                                                                        passwordStrength.strength === 5 ? 'bg-green-600 w-full' : 'w-0'
+                                                        }`}
                                                 />
                                             </div>
                                         </div>
@@ -315,7 +288,7 @@ const SignUp = () => {
                                             onChange={handleInputChange('confirmPassword')}
                                             required
                                             autoComplete="new-password"
-                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 pr-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
+                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 pl-10 pr-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
                                             disabled={isLoading || isGoogleLoading}
                                         />
                                         <Button
@@ -351,25 +324,13 @@ const SignUp = () => {
                                     )}
                                 </div>
 
-                                <div className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4">
-                                    <p className="text-xs text-gray-300">
-                                        By creating an account, you agree to our{" "}
-                                        <Link to="/terms" className="text-blue-400 hover:text-purple-400 underline">
-                                            Terms of Service
-                                        </Link>{" "}
-                                        and{" "}
-                                        <Link to="/privacy" className="text-blue-400 hover:text-purple-400 underline">
-                                            Privacy Policy
-                                        </Link>
-                                        .
-                                    </p>
-                                </div>
+
                             </CardContent>
 
                             <CardFooter className="flex flex-col space-y-4 pt-2">
                                 <Button
                                     type="submit"
-                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 cursor-pointer h-11 disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={isLoading || isGoogleLoading}
                                 >
                                     {isLoading ? (
@@ -379,7 +340,6 @@ const SignUp = () => {
                                         </>
                                     ) : (
                                         <>
-                                            <Sparkles className="w-4 h-4 mr-2" />
                                             Create Account
                                         </>
                                     )}
@@ -395,7 +355,7 @@ const SignUp = () => {
                                     type="button"
                                     variant="outline"
                                     onClick={handleGoogleSignup}
-                                    className="w-full border-gray-600 text-white hover:bg-gray-700 hover:border-gray-500 transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full border-gray-600 text-black hover:bg-gray-700 hover:border-gray-500 hover:text-white cursor-pointer transition-all duration-200 h-11 disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={isLoading || isGoogleLoading}
                                 >
                                     {isGoogleLoading ? (
@@ -440,14 +400,15 @@ const SignUp = () => {
                 <div className="absolute bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000" />
                 <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl animate-pulse delay-2000" />
 
-                <div className="relative z-10 flex flex-col justify-center items-center text-center p-12 text-white">
+                {/* Centered Content */}
+                <div className="relative z-10 flex flex-col justify-center items-center text-center p-12 text-white h-full w-full">
                     <div className="max-w-lg space-y-8">
                         <div className="space-y-4">
                             <h2 className="text-4xl font-bold leading-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                                Join the AI Revolution
+                                Your AI Code Companion
                             </h2>
                             <p className="text-xl text-white/80 leading-relaxed">
-                                Transform your coding workflow with intelligent AI assistance and unlock your development potential.
+                                Enhance your coding experience with intelligent assistance, smart suggestions, and automated workflows.
                             </p>
                         </div>
 

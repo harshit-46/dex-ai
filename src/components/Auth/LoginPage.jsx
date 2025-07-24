@@ -57,9 +57,9 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        
+
         if (!validateForm()) return;
-        
+
         setIsLoading(true);
         try {
             await signInWithEmailAndPassword(auth, email, password);
@@ -84,7 +84,7 @@ const LoginPage = () => {
     const handleGoogleLogin = async () => {
         setError('');
         setIsGoogleLoading(true);
-        
+
         try {
             const user = await loginWithGoogle();
             if (user) {
@@ -156,7 +156,7 @@ const LoginPage = () => {
                                             onChange={handleEmailChange}
                                             required
                                             autoComplete="email"
-                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
+                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 pl-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
                                             disabled={isLoading || isGoogleLoading}
                                         />
                                     </div>
@@ -176,7 +176,7 @@ const LoginPage = () => {
                                             onChange={handlePasswordChange}
                                             required
                                             autoComplete="current-password"
-                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 pr-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
+                                            className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 pl-10 pr-10 h-11 transition-all duration-200 hover:bg-gray-700/70"
                                             disabled={isLoading || isGoogleLoading}
                                         />
                                         <Button
@@ -222,7 +222,6 @@ const LoginPage = () => {
                                         </>
                                     ) : (
                                         <>
-                                            <Sparkles className="w-4 h-4 mr-2" />
                                             Sign In
                                         </>
                                     )}
@@ -283,7 +282,8 @@ const LoginPage = () => {
                 <div className="absolute bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000" />
                 <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl animate-pulse delay-2000" />
 
-                <div className="relative z-10 flex flex-col justify-center items-center text-center p-12 text-white">
+                {/* Centered Content */}
+                <div className="relative z-10 flex flex-col justify-center items-center text-center p-12 text-white h-full w-full">
                     <div className="max-w-lg space-y-8">
                         <div className="space-y-4">
                             <h2 className="text-4xl font-bold leading-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
