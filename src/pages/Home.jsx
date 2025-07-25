@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CodeEditor from '../components/CodeEditor';
-import Navbar from '../components/Navbar/Sidebar';
+import Sidebar from '../components/Navbar/Sidebar';
 
 const Home = () => {
     const [selectedItem, setSelectedItem] = useState(null);
@@ -8,7 +8,12 @@ const Home = () => {
     return (
         <div className="w-screen h-screen flex flex-col">
             <div className="flex-1 flex overflow-hidden">
-                <Navbar/>
+                <Sidebar
+                    onSelect={(item) => {
+                        console.log('Sending prompt:', item);
+                        setSelectedItem(item);
+                    }}
+                />
                 <div className="flex-1 overflow-auto">
                     <CodeEditor selectedItem={selectedItem} />
                 </div>
@@ -18,3 +23,4 @@ const Home = () => {
 };
 
 export default Home;
+
