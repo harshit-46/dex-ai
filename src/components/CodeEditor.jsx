@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef ,useImperativeHandle, forwardRef } from 'react';
 import { generateCodeStream } from '../utils/mistral';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../utils/firebase';
@@ -14,10 +14,10 @@ import {
 } from 'lucide-react';
 
 
-const CodeEditor = ({selectedItem}) => {
+const CodeEditor = forwardRef((props, ref ) => {
 
-    const[input , setInput] = useState('');
-
+    const { selectedItem } = props;
+    const [input, setInput] = useState('');
     const [prompt, setPrompt] = useState('');
     const [code, setCode] = useState('');
     const [language, setLanguage] = useState('javascript');
@@ -28,6 +28,18 @@ const CodeEditor = ({selectedItem}) => {
     const [isStreaming, setIsStreaming] = useState(false);
     const { user } = useAuth();
     const promptRef = useRef(null);
+
+
+    useImperativeHandle(ref, () => ({
+        clearEditor: () => {
+            setPrompt('');
+            setInput('');
+            setCode('');
+            setResponseText('');
+            setStreamingText('');
+            setError('');
+        }
+    }));
 
     useEffect(() => {
         if (selectedItem) {
@@ -42,7 +54,6 @@ const CodeEditor = ({selectedItem}) => {
 
     useEffect(() => {
         if (selectedItem) {
-            // Set input field and output fields
             setInput(selectedItem.prompt);
             setCode(selectedItem.code);
             setResponseText(selectedItem.response);
@@ -270,6 +281,6 @@ const CodeEditor = ({selectedItem}) => {
             </div>
         </div>
     );
-};
+});
 
 export default CodeEditor;

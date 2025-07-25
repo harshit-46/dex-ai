@@ -4,8 +4,13 @@ import { Plus, PanelLeft, ArrowLeftToLine, ArrowRightToLine } from 'lucide-react
 const SidebarHeader = ({ isOpen, setIsOpen, onNewChat }) => {
     const [isHovered, setIsHovered] = useState(false);
 
+    const hanldeNewChat = () => {
+        console.log("New chat clicked!")
+        onNewChat?.(); 
+    };
+
     return (
-        <div className="p-4">
+        <div className="p-4 border border-yellow-600">
             <div className="flex items-center justify-between">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -29,8 +34,8 @@ const SidebarHeader = ({ isOpen, setIsOpen, onNewChat }) => {
             </div>
 
             <button
-                onClick={() => onNewChat?.()}
-                className={`mt-4 w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 font-medium ${!isOpen && 'justify-center'}`}
+                onClick={hanldeNewChat}
+                className={`mt-4 w-full flex items-center gap-3 px-3 py-2 cursor-pointer border border-pink-600 rounded-lg transition-all duration-200 font-medium ${!isOpen && 'justify-center'}`}
             >
                 <Plus size={18} />
                 {isOpen && 'New Chat'}
