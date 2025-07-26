@@ -7,10 +7,12 @@ const Sidebar = ({ onSelect, onNewChat }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="h-screen flex bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-            <div className={`transition-all duration-300 ease-in-out flex flex-col bg-slate-800/50 backdrop-blur-sm border-r border-slate-700/50 relative ${isOpen ? 'w-72' : 'w-16'}`}>
+        <div className="h-screen flex bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative">
+            <div className={`transition-all duration-300 ease-in-out flex flex-col bg-slate-800/50 backdrop-blur-sm border-r border-slate-700/50 ${isOpen ? 'w-72' : 'w-16'}`}>
                 <SidebarHeader isOpen={isOpen} setIsOpen={setIsOpen} onNewChat={onNewChat} />
-                <HistoryList isOpen={isOpen} onSelect={onSelect} />
+                <div className="flex-1 overflow-hidden">
+                    <HistoryList isOpen={isOpen} onSelect={onSelect} />
+                </div>
                 <SidebarFooter isOpen={isOpen} />
             </div>
         </div>

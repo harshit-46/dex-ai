@@ -1,44 +1,77 @@
 import React, { useState } from 'react';
-import { Plus, PanelLeft, ArrowLeftToLine, ArrowRightToLine } from 'lucide-react';
+import { Plus, PanelLeft, ArrowLeftToLine, ArrowRightToLine} from 'lucide-react';
 
-const SidebarHeader = ({ isOpen, setIsOpen, onNewChat }) => {
+const SidebarHeader = ({ isOpen, setIsOpen, onNewChat, isLoading = false }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    const hanldeNewChat = () => {
-        console.log("New chat clicked!")
+    const handleNewChat = () => {
+        console.log("New chat clicked!");
         onNewChat?.(); 
     };
 
+    const handleToggle = () => {
+        setIsOpen(!isOpen);
+    };
+
     return (
-        <div className="p-4 border border-yellow-600">
-            <div className="flex items-center justify-between">
+        <div className="p-4">
+            <div className="flex items-center gap-3 mb-4">
                 <button
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={handleToggle}
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
-                    className="p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group cursor-pointer"
+                    className="p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group cursor-pointer flex-shrink-0"
+                    title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+                    aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
                 >
-                    {isHovered
-                        ? isOpen
-                            ? <ArrowLeftToLine size={20} className="text-slate-300 group-hover:text-white" />
-                            : <ArrowRightToLine size={20} className="text-slate-300 group-hover:text-white" />
-                        : <PanelLeft size={20} className="text-slate-300 group-hover:text-white" />}
-                </button>
-                {isOpen && (
-                    <div className="flex items-center gap-2">
-                        <h1 className="text-xl font-bold text-white">
-                            Dex
-                        </h1>
+                    <div className="transition-transform duration-200 ease-in-out">
+                        {isHovered
+                            ? isOpen
+                                ? <ArrowLeftToLine size={20} className="text-slate-300 group-hover:text-white transition-colors duration-200" />
+                                : <ArrowRightToLine size={20} className="text-slate-300 group-hover:text-white transition-colors duration-200" />
+                            : <PanelLeft size={20} className="text-slate-300 group-hover:text-white transition-colors duration-200" />
+                        }
                     </div>
-                )}
+                </button>
+                <div className="flex items-center gap-3">
+                    <h1 className={`
+                        text-xl font-bold text-white whitespace-nowrap
+                        transition-all duration-300 ease-in-out
+                        ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}
+                    `}>
+                        Dex
+                    </h1>
+                </div>
             </div>
-
             <button
-                onClick={hanldeNewChat}
-                className={`mt-4 w-full flex items-center gap-3 px-3 py-2 cursor-pointer border border-pink-600 rounded-lg transition-all duration-200 font-medium ${!isOpen && 'justify-center'}`}
+                onClick={handleNewChat}
+                disabled={isLoading}
+                className={`
+                    w-full flex items-center gap-3 px-3 py-2.5 
+                    cursor-pointer rounded-lg
+                    transition-all duration-200 font-medium
+                    hover:border-slate-500 hover:bg-slate-700/30
+                    focus:outline-none 
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    text-slate-200 hover:text-white
+                    ${!isOpen && 'justify-center'}
+                `}
+                title="Start a new conversation"
+                aria-label="Start a new conversation"
             >
-                <Plus size={18} />
-                {isOpen && 'New Chat'}
+                <Plus 
+                    size={18} 
+                    className={`
+                        transition-all duration-200 flex-shrink-0
+                        ${isLoading ? 'animate-spin' : ''}
+                    `} 
+                />
+                <span className={`
+                    transition-all duration-300 ease-in-out
+                    ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 absolute'}
+                `}>
+                    {isLoading ? 'Starting...' : 'New Chat'}
+                </span>
             </button>
         </div>
     );

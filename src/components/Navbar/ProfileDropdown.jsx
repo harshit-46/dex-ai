@@ -14,7 +14,7 @@ const ProfileDropdown = ({ isOpen, close }) => {
 
     return (
         <div className={`absolute z-50 ${
-            isOpen ? 'bottom-full left-0 right-0 mb-2' : 'bottom-full right-0 w-48 mb-2'
+            isOpen ? 'bottom-full left-2 right-2' : 'bottom-full right-0 w-48 mb-2'
         } bg-slate-800 border border-slate-700 rounded-lg shadow-xl`}>
             <div className="py-1">
                 <button
@@ -22,7 +22,7 @@ const ProfileDropdown = ({ isOpen, close }) => {
                         console.log('Account settings clicked');
                         close();
                     }}
-                    className="w-full px-4 py-3 text-left text-sm hover:bg-slate-700/50 flex items-center gap-3"
+                    className="w-full px-4 py-3 text-left text-sm hover:bg-slate-700/50 flex cursor-pointer items-center gap-3"
                 >
                     <User size={16} className="text-slate-400" />
                     <span className="text-slate-200">Account Settings</span>
@@ -30,7 +30,7 @@ const ProfileDropdown = ({ isOpen, close }) => {
                 <hr className="border-slate-700" />
                 <button
                     onClick={handleLogout}
-                    className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-3"
+                    className="w-full px-4 py-3 text-left text-sm cursor-pointer text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-3"
                 >
                     <LogOut size={16} />
                     <span>Sign Out</span>

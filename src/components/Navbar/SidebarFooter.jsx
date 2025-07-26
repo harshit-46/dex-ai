@@ -63,7 +63,11 @@ const SidebarFooter = ({ isOpen }) => {
                     </button>
                 </div>
             )}
-            {dropdownOpen && <ProfileDropdown isOpen={isOpen} close={() => setDropdownOpen(false)} />}
+            {dropdownOpen && (
+                <div className={isOpen ? '' : 'absolute bottom-0 left-full ml-34'}>
+                    <ProfileDropdown isOpen={isOpen} close={() => setDropdownOpen(false)} />
+                </div>
+            )}
         </div>
     );
 };
