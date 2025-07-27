@@ -7,7 +7,6 @@ import Home from './pages/Home';
 import VerifyEmail from './pages/VerifyEmail';
 import AuthRoute from './components/Auth/AuthRoute';
 
-
 const App = () => {
   return (
     <Routes>
