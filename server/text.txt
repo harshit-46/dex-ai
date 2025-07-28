@@ -1,0 +1,252 @@
+// server.js
+const express = require('express');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3001;
+
+// Security middleware
+app.use(helmet());
+
+// CORS configuration
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.FRONTEND_URL 
+        : 'http://localhost:3000',
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: {
+        error: 'Too many requests from this IP, please try again later.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use('/api/', limiter);
+
+// Body parser middleware with size limits
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+});
+
+// Initialize the Google Generative AI model
+let model;
+try {
+    if (!process.env.GOOGLE_API_KEY) {
+        throw new Error('GOOGLE_API_KEY environment variable is required');
+    }
+    
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-pro-latest",
+        generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 8192,
+        },
+    });
+    console.log('Gemini AI model initialized successfully');
+} catch (error) {
+    console.error('Failed to initialize Gemini AI model:', error.message);
+    process.exit(1);
+}
+
+// Input validation middleware
+const validatePrompt = (req, res, next) => {
+    const { prompt } = req.body;
+    
+    if (!prompt) {
+        return res.status(400).json({ error: 'Prompt is required' });
+    }
+    
+    if (typeof prompt !== 'string') {
+        return res.status(400).json({ error: 'Prompt must be a string' });
+    }
+    
+    if (prompt.trim().length === 0) {
+        return res.status(400).json({ error: 'Prompt cannot be empty' });
+    }
+    
+    if (prompt.length > 30000) {
+        return res.status(400).json({ error: 'Prompt is too long (max 30,000 characters)' });
+    }
+    
+    // Sanitize the prompt
+    req.body.prompt = prompt.trim();
+    next();
+};
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
+// Main API route
+app.post('/api/gemini', validatePrompt, async (req, res) => {
+    const startTime = Date.now();
+    
+    try {
+        const { prompt } = req.body;
+        
+        console.log(`Processing request - Prompt length: ${prompt.length} characters`);
+        
+        // Generate content with timeout
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timeout')), 30000)
+        );
+        
+        const generatePromise = model.generateContent(prompt);
+        
+        const result = await Promise.race([generatePromise, timeoutPromise]);
+        const response = await result.response;
+        const text = response.text();
+        
+        const processingTime = Date.now() - startTime;
+        console.log(`Request completed in ${processingTime}ms`);
+        
+        res.json({ 
+            text,
+            metadata: {
+                processingTime,
+                promptLength: prompt.length,
+                responseLength: text.length,
+                timestamp: new Date().toISOString()
+            }
+        });
+        
+    } catch (error) {
+        const processingTime = Date.now() - startTime;
+        console.error(`Error after ${processingTime}ms:`, error.message);
+        
+        // Handle different types of errors
+        if (error.message === 'Request timeout') {
+            return res.status(408).json({ 
+                error: 'Request timeout - please try again with a shorter prompt' 
+            });
+        }
+        
+        if (error.message?.includes('SAFETY')) {
+            return res.status(400).json({ 
+                error: 'Content blocked due to safety concerns' 
+            });
+        }
+        
+        if (error.message?.includes('QUOTA_EXCEEDED')) {
+            return res.status(429).json({ 
+                error: 'API quota exceeded - please try again later' 
+            });
+        }
+        
+        if (error.message?.includes('INVALID_ARGUMENT')) {
+            return res.status(400).json({ 
+                error: 'Invalid prompt format' 
+            });
+        }
+        
+        // Generic server error
+        res.status(500).json({ 
+            error: 'Failed to generate response',
+            requestId: req.headers['x-request-id'] || 'unknown'
+        });
+    }
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+    res.status(404).json({ error: 'Endpoint not found' });
+});
+
+// Global error handler
+app.use((error, req, res, next) => {
+    console.error('Unhandled error:', error);
+    res.status(500).json({ 
+        error: 'Internal server error',
+        requestId: req.headers['x-request-id'] || 'unknown'
+    });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received, shutting down gracefully');
+    process.exit(0);
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+
+
+
+
+
+// server.js
+const express = require('express');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const dotenv = require('dotenv');
+const cors = require('cors');
+
+dotenv.config();
+
+const app = express();
+const port = 3001; // You can choose any available port
+
+// Middleware
+app.use(cors()); // Allow requests from your React app
+app.use(express.json()); // Allow the server to parse JSON request bodies
+
+// Initialize the Google Generative AI model
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" }); // Or your desired model
+
+// Define the API route
+app.post('/api/gemini', async (req, res) => {
+    try {
+        const { prompt } = req.body;
+
+        if (!prompt) {
+            return res.status(400).send({ error: 'Prompt is required' });
+        }
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        res.send({ text });
+    } catch (error) {
+        console.error("Error calling Gemini API:", error);
+        res.status(500).send({ error: 'Failed to fetch response from Gemini API' });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});

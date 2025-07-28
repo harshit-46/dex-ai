@@ -24,3 +24,24 @@ const App = () => {
 };
 
 export default App;
+
+
+
+/*
+
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import GeminiComponent from './components/Gemini';
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<GeminiComponent/>} />
+    </Routes>
+  );
+};
+
+export default App;
+
+
+*/
