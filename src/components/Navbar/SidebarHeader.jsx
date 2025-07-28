@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { Plus, PanelLeft, ArrowLeftToLine, ArrowRightToLine} from 'lucide-react';
+import {
+    SquarePen,
+    PanelLeft,
+    ArrowLeftToLine,
+    ArrowRightToLine
+} from 'lucide-react';
 
 const SidebarHeader = ({ isOpen, setIsOpen, onNewChat, isLoading = false }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const handleNewChat = () => {
         console.log("New chat clicked!");
-        onNewChat?.(); 
+        onNewChat?.();
     };
 
     const handleToggle = () => {
@@ -23,6 +28,7 @@ const SidebarHeader = ({ isOpen, setIsOpen, onNewChat, isLoading = false }) => {
                     className="p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group cursor-pointer flex-shrink-0"
                     title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
                     aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+                    aria-pressed={isOpen}
                 >
                     <div className="transition-transform duration-200 ease-in-out">
                         {isHovered
@@ -33,43 +39,40 @@ const SidebarHeader = ({ isOpen, setIsOpen, onNewChat, isLoading = false }) => {
                         }
                     </div>
                 </button>
-                <div className="flex items-center gap-3">
-                    <h1 className={`
-                        text-xl font-bold text-white whitespace-nowrap
-                        transition-all duration-300 ease-in-out
-                        ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}
-                    `}>
-                        Dex
-                    </h1>
-                </div>
+
+                <h1 className={`
+            text-xl font-bold text-white whitespace-nowrap
+            transition-all duration-300 ease-in-out
+            ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}
+        `}>
+                    Dex
+                </h1>
             </div>
+
             <button
                 onClick={handleNewChat}
                 disabled={isLoading}
                 className={`
-                    w-full flex items-center gap-3 px-3 py-2.5 
-                    cursor-pointer rounded-lg
-                    transition-all duration-200 font-medium
-                    hover:border-slate-500 hover:bg-slate-700/30
-                    focus:outline-none 
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    text-slate-200 hover:text-white
-                    ${!isOpen && 'justify-center'}
-                `}
+            w-full flex items-center gap-3 px-3 py-2.5 
+            cursor-pointer rounded-lg
+            transition-all duration-200 font-medium
+            hover:border-slate-500 hover:bg-slate-700/30
+            focus:outline-none 
+            disabled:opacity-50 disabled:cursor-not-allowed
+            text-slate-200 hover:text-white
+            ${!isOpen && 'justify-center'}
+        `}
                 title="Start a new conversation"
                 aria-label="Start a new conversation"
             >
-                <Plus 
-                    size={18} 
-                    className={`
-                        transition-all duration-200 flex-shrink-0
-                        ${isLoading ? 'animate-spin' : ''}
-                    `} 
+                <SquarePen
+                    size={20}
+                    className={`transition-all duration-200 flex-shrink-0 ${isLoading ? 'animate-spin' : ''}`}
                 />
                 <span className={`
-                    transition-all duration-300 ease-in-out
-                    ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 absolute'}
-                `}>
+            transition-all duration-300 ease-in-out
+            ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 absolute'}
+        `}>
                     {isLoading ? 'Starting...' : 'New Chat'}
                 </span>
             </button>
