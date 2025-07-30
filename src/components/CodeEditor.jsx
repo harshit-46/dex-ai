@@ -73,15 +73,12 @@ const CodeEditor = forwardRef((props, ref) => {
 
     const autoResizeTextarea = useCallback(() => {
         if (promptRef.current) {
-            const maxHeight = 300; 
+            const maxHeight = 300;
             promptRef.current.style.height = 'auto';
-            
             if (promptRef.current.scrollHeight <= maxHeight) {
-
                 promptRef.current.style.height = promptRef.current.scrollHeight + 'px';
                 promptRef.current.style.overflowY = 'hidden';
             } else {
-
                 promptRef.current.style.height = maxHeight + 'px';
                 promptRef.current.style.overflowY = 'auto';
             }
@@ -106,7 +103,6 @@ const CodeEditor = forwardRef((props, ref) => {
 
         const currentPrompt = prompt.trim();
         setHasStartedChat(true);
-        
 
         const userMessage = {
             id: Date.now(),
@@ -117,7 +113,7 @@ const CodeEditor = forwardRef((props, ref) => {
             timestamp: new Date(),
             isLoading: true
         };
-        
+
         setConversationHistory(prev => [...prev, userMessage]);
         setPrompt('');
 
@@ -126,7 +122,7 @@ const CodeEditor = forwardRef((props, ref) => {
         }
 
         abortControllerRef.current = new AbortController();
-        
+
         setLoading(true);
         setIsStreaming(true);
         setError('');
@@ -151,7 +147,7 @@ const CodeEditor = forwardRef((props, ref) => {
 
             const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
             const matches = [...result.matchAll(codeBlockRegex)];
-            
+
             if (matches.length > 0) {
                 const lastMatch = matches[matches.length - 1];
                 finalLanguage = lastMatch[1] || language;
@@ -159,17 +155,18 @@ const CodeEditor = forwardRef((props, ref) => {
             }
 
             finalExplanation = result.replace(/```[\s\S]*?```/g, '').trim();
+            console.log("Final answer is : ",finalExplanation);
 
-            setConversationHistory(prev => 
-                prev.map(msg => 
-                    msg.id === userMessage.id 
+            setConversationHistory(prev =>
+                prev.map(msg =>
+                    msg.id === userMessage.id
                         ? {
                             ...msg,
                             code: finalCode,
                             language: finalLanguage,
                             response: finalExplanation,
                             isLoading: false
-                            }
+                        }
                         : msg
                 )
             );
@@ -197,9 +194,9 @@ const CodeEditor = forwardRef((props, ref) => {
                 console.error("Code generation error:", err);
                 const errorMessage = `Failed to generate code: ${err.message || "Unknown error"}`;
                 setError(errorMessage);
-                setConversationHistory(prev => 
-                    prev.map(msg => 
-                        msg.id === userMessage.id 
+                setConversationHistory(prev =>
+                    prev.map(msg =>
+                        msg.id === userMessage.id
                             ? { ...msg, error: errorMessage, isLoading: false }
                             : msg
                     )
@@ -314,7 +311,6 @@ const CodeEditor = forwardRef((props, ref) => {
                             <Code className="h-4 w-4 text-white" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-purple-200 text-sm font-medium mb-1">You asked</p>
                             <p className="text-white leading-relaxed">{message.prompt}</p>
                         </div>
                     </div>
@@ -332,11 +328,8 @@ const CodeEditor = forwardRef((props, ref) => {
                         </div>
                     </div>
                 ) : message.isLoading ? (
-                    <div className="bg-gray-800/60 backdrop-blur-md border border-gray-700/50 rounded-2xl p-4 max-w-4xl">
-                        <div className="flex items-center space-x-2">
-                            <Loader2 className="h-4 w-4 animate-spin text-purple-400" />
-                            <span className="text-sm text-gray-300">AI is generating response...</span>
-                        </div>
+                    <div className="">
+
                     </div>
                 ) : (
                     <>
@@ -396,7 +389,7 @@ const CodeEditor = forwardRef((props, ref) => {
 
     return (
         <div className="min-h-screen bg-[#001219] text-white flex flex-col">
-            <style jsx>{`
+            <style>{`
                 .scrollbar-hide {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
@@ -405,7 +398,7 @@ const CodeEditor = forwardRef((props, ref) => {
                     display: none;
                 }
             `}</style>
-            
+
             <div className="flex-1 flex flex-col">
                 {!hasStartedChat ? (
                     <div className="flex-1 flex items-center justify-center px-4">
@@ -442,7 +435,7 @@ const CodeEditor = forwardRef((props, ref) => {
                                     </div>
                                 </div>
                             )}
-                            
+
                             <div ref={conversationEndRef} />
                         </div>
                     </div>
@@ -484,7 +477,7 @@ const CodeEditor = forwardRef((props, ref) => {
                                         {loading ? (
                                             <Loader2 className="h-5 w-5 animate-spin" />
                                         ) : (
-                                            <ArrowUp className='h-5 w-5 rounded-md bg-gray-700 hover:bg-gray-700'/>
+                                            <ArrowUp className='h-5 w-5 rounded-md bg-gray-700 hover:bg-gray-700' />
                                         )}
                                     </button>
                                 </div>
